@@ -15,4 +15,4 @@
 ## 🚀 Quick Start  
 1. Clone the repo:  
    ```bash  
-   git clone https://github.com/newbeginer001/tictactoe
+   git clone https://github.com/newbeginer001/tictactoe.git
