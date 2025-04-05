@@ -1,2 +1,12 @@
-# tictactoe
-🎮 Dynamic Tic-Tac-Toe Game | 3x3 to 5x5 Boards | Real-Time Win Detection | Clean UI | JavaScript
+# Project Title 🚀  
+*A short, catchy description of your project.*  
+
+## Features ✨  
+- List key functionalities (e.g., "Dynamic Tic-Tac-Toe boards").  
+- Add screenshots/GIFs.  
+
+## Setup 🛠️  
+```bash
+git clone [your-repo-url]
+cd your-project
+open index.html
