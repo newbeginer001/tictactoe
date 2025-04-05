@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Tic-Tac-Toe</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+            color: #00ffc3;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            font-size: 50px;
+            font-weight: bold;
+            padding: 20px;
+            background: linear-gradient(135deg, #00ffc3, #0f3460);
+            color: white;
+            text-shadow: 0 0 10px #00ffc3, 0 0 20px #0f3460;
+            margin-bottom: 20px;
+            border-bottom: 5px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        footer {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #0f3460, #1a1a2e);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: none;
+            border-top: 5px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+        }
+        #menu {
+            margin: 20px;
+        }
+        button {
+            padding: 12px;
+            font-size: 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #00ffc3, #0f3460);
+            color: white;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 255, 195, 0.5);
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 255, 195, 0.8);
+        }
+        #game {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            position: relative;
+        }
+        #status {
+            margin: 20px;
+            font-size: 26px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffc3, 0 0 20px #0f3460;
+        }
+        #board {
+            display: grid;
+            gap: 10px;
+            margin: 20px auto;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+        }
+        .cell {
+            width: 90px;
+            height: 90px;
+            font-size: 30px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #00ffc3;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ffc3;
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 255, 195, 0.5);
+        }
+        .cell:hover {
+            transform: scale(1.2);
+            box-shadow: 0 8px 20px rgba(0, 255, 195, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .winning-cell {
+            position: relative;
+            background: linear-gradient(135deg, #00ffc3, #0f3460);
+            color: white;
+            animation: pulse 1s infinite, glow 1.5s infinite alternate;
+            overflow: hidden;
+        }
+        .winning-cell::before {
+            content: '';
+            position: absolute;
+            background: #ff4081;
+            width: 150%;
+            height: 2px;
+            transform-origin: center;
+        }
+        .winning-cell.horizontal::before {
+            transform: rotate(0deg);
+            top: 50%;
+            left: -25%;
+        }
+        .winning-cell.vertical::before {
+            transform: rotate(90deg);
+            top: -25%;
+            left: 50%;
+        }
+        .winning-cell.diagonal-left::before {
+            transform: rotate(45deg);
+            top: 50%;
+            left: -25%;
+        }
+        .winning-cell.diagonal-right::before {
+            transform: rotate(-45deg);
+            top: 50%;
+            left: -25%;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #00ffc3, 0 0 20px #0f3460; }
+            100% { box-shadow: 0 0 20px #00ffc3, 0 0 40px #0f3460; }
+        }
+        .confetti {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            animation: confetti-fall 3s ease-out forwards, confetti-spin 3s linear infinite;
+        }
+        @keyframes confetti-fall {
+            0% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, 200%) rotate(360deg); }
+        }
+        @keyframes confetti-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>Tic-Tac-Toe Game</header>
+    <div id="menu">
+        <h2>Select Board Size</h2>
+        <button aria-label="Start 3x3 game" onclick="startGame(3)">3x3</button>
+        <button aria-label="Start 4x4 game" onclick="startGame(4)">4x4</button>
+        <button aria-label="Start 5x5 game" onclick="startGame(5)">5x5</button>
+    </div>
+    <div id="game" class="fade-in">
+        <div id="status">Player X's Turn</div>
+        <div id="board"></div>
+    </div>
+    <footer>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <img src="img.jpg" alt="Profile Image" style="width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 0 10px rgba(0, 230, 118, 0.8);">
+            <span>Developed by <strong>Krishnendu Adhikary</strong></span>
+        </div>
+    </footer>
+    
+    <script>
+        let boardSize, board, currentPlayer, cells;
+        
+        function startGame(size) {
+            boardSize = size;
+            currentPlayer = 'X';
+            board = Array(size).fill().map(() => Array(size).fill(null));
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('status').textContent = "Player X's Turn";
+            drawBoard();
+        }
+        
+        function drawBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            boardElement.style.gridTemplateColumns = `repeat(${boardSize}, 70px)`;
+            boardElement.style.gridTemplateRows = `repeat(${boardSize}, 70px)`;
+            boardElement.classList.add('fade-in');
+            
+            cells = [];
+            for (let r = 0; r < boardSize; r++) {
+                for (let c = 0; c < boardSize; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    cell.setAttribute('aria-label', `Cell ${r+1},${c+1}`);
+                    cell.onclick = makeMove;
+                    boardElement.appendChild(cell);
+                    cells.push(cell);
+                }
+            }
+        }
+        
+        function makeMove() {
+            const row = parseInt(this.dataset.row);
+            const col = parseInt(this.dataset.col);
+            if (board[row][col]) return;
+            
+            board[row][col] = currentPlayer;
+            this.textContent = currentPlayer;
+            this.setAttribute('aria-label', `${currentPlayer} at ${row+1},${col+1}`);
+            this.style.transform = 'scale(1.2)';
+            setTimeout(() => { this.style.transform = 'scale(1)'; }, 200);
+            
+            if (checkWin(row, col)) {
+                document.getElementById('status').textContent = `🎉 Player ${currentPlayer} Wins! 🎉`;
+                highlightWinningCells(row, col);
+                showConfetti();
+                disableCells();
+                return;
+            }
+            
+            if (checkDraw()) {
+                document.getElementById('status').textContent = "Draw!";
+                disableCells();
+                return;
+            }
+            
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('status').textContent = `Player ${currentPlayer}'s Turn`;
+        }
+        
+        function checkWin(row, col) {
+            const symbol = board[row][col];
+            const directions = [
+                [0, 1],  // Horizontal
+                [1, 0],  // Vertical
+                [1, 1],  // Diagonal
+                [1, -1]   // Anti-diagonal
+            ];
+            
+            for (const [dr, dc] of directions) {
+                let count = 1;
+                
+                // Check in positive direction
+                for (let step = 1; step < boardSize; step++) {
+                    const r = row + dr * step;
+                    const c = col + dc * step;
+                    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || board[r][c] !== symbol) break;
+                    count++;
+                }
+                
+                // Check in negative direction
+                for (let step = 1; step < boardSize; step++) {
+                    const r = row - dr * step;
+                    const c = col - dc * step;
+                    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || board[r][c] !== symbol) break;
+                    count++;
+                }
+                
+                if (count >= boardSize) return true;
+            }
+            
+            return false;
+        }
+        
+        function checkDraw() {
+            return board.flat().every(cell => cell !== null);
+        }
+        
+        function highlightWinningCells(row, col) {
+            const symbol = board[row][col];
+            const directions = {
+                'horizontal': [0, 1],
+                'vertical': [1, 0],
+                'diagonal-left': [1, 1],
+                'diagonal-right': [1, -1]
+            };
+            
+            for (const [direction, [dr, dc]] of Object.entries(directions)) {
+                let winningCells = [];
+                
+                // Check both directions from the starting cell
+                for (let step = 0; step < boardSize; step++) {
+                    const r = row + dr * step;
+                    const c = col + dc * step;
+                    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || board[r][c] !== symbol) break;
+                    winningCells.push({r, c});
+                }
+                
+                for (let step = 1; step < boardSize; step++) {
+                    const r = row - dr * step;
+                    const c = col - dc * step;
+                    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || board[r][c] !== symbol) break;
+                    winningCells.push({r, c});
+                }
+                
+                if (winningCells.length >= boardSize) {
+                    winningCells.forEach(({r, c}) => {
+                        const index = r * boardSize + c;
+                        cells[index].classList.add('winning-cell', direction);
+                    });
+                    return;
+                }
+            }
+        }
+        
+        function disableCells() {
+            cells.forEach(cell => cell.onclick = null);
+        }
+        
+        function showConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.textContent = i % 2 === 0 ? '🎉' : '✨'; // Alternate between emojis
+                confetti.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+                confetti.style.animationDelay = `${Math.random() * 2}s`; // Random delay
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000); // Remove after animation
+            }
+        }
+    </script>
+</body>
+</html>
+``` 
